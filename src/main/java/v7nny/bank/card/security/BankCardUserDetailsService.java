@@ -9,7 +9,9 @@ import v7nny.bank.card.repository.BankCardUserRepository;
 
 @Service
 public class BankCardUserDetailsService implements UserDetailsService {
+
     private final BankCardUserRepository userRepository;
+
 
     @Autowired
     public BankCardUserDetailsService(BankCardUserRepository userRepository) {

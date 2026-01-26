@@ -8,7 +8,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import v7nny.bank.card.dto.SignInDTO;
+import v7nny.bank.card.dto.SignUpDTO;
+import v7nny.bank.card.exception.EmailAlreadyTakenException;
+import v7nny.bank.card.exception.UsernameAlreadyTakenException;
 import v7nny.bank.card.service.AuthService;
+import v7nny.bank.card.service.BankCardUserService;
 
 import java.util.Map;
 
@@ -21,6 +25,18 @@ public class AuthController {
 
     public AuthController(AuthService authService) {
         this.authService = authService;
+    }
+
+    @PostMapping("/sign-up")
+    public ResponseEntity<?> signUp(@RequestBody SignUpDTO signUpDTO, HttpServletResponse response) {
+        try {
+            var cookie = authService.signUp(signUpDTO);
+
+            response.addCookie(cookie);
+            return ResponseEntity.status(201).body(Map.of("username", signUpDTO.username()));
+        } catch (EmailAlreadyTakenException | UsernameAlreadyTakenException e) {
+            return ResponseEntity.status(409).body(Map.of("message", e.getMessage()));
+        }
     }
 
     @PostMapping("/sign-in")

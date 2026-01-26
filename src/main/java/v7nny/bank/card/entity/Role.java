@@ -5,9 +5,10 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "Roles")
 public class Role {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
     @Column(name = "name")
     private String name;
@@ -19,11 +20,15 @@ public class Role {
         this.name = name;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public int getId() {
+        return id;
     }
 
-    public Long getId() {
-        return id;
+    public String getName() {
+        return name;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

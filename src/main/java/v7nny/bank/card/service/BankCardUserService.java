@@ -2,12 +2,12 @@ package v7nny.bank.card.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import v7nny.bank.card.entity.BankCardUser;
 import v7nny.bank.card.repository.BankCardUserRepository;
 
-import java.util.List;
-
 @Service
+@Transactional(readOnly = true)
 public class BankCardUserService {
 
     private final BankCardUserRepository userRepository;
@@ -18,7 +18,16 @@ public class BankCardUserService {
         this.userRepository = userRepository;
     }
 
-    public List<BankCardUser> findAll() {
-        return userRepository.findAll();
+    public boolean isUsernameTaken(String username) {
+        return userRepository.findOneByUsername(username).isPresent();
+    }
+
+    public boolean isEmailTaken(String email) {
+        return userRepository.findOneByEmail(email).isPresent();
+    }
+
+    @Transactional
+    public void save(BankCardUser user) {
+        userRepository.save(user);
     }
 }

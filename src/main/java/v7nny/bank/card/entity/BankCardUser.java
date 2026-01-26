@@ -9,6 +9,7 @@ import java.util.List;
 @Entity
 @Table(name = "Users")
 public class BankCardUser {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -16,11 +17,11 @@ public class BankCardUser {
     @Column(name = "username")
     private String username;
 
-    @Column(name = "password")
-    private String password;
-
     @Column(name = "email")
     private String email;
+
+    @Column(name = "password")
+    private String password;
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
@@ -34,13 +35,14 @@ public class BankCardUser {
     )
     private Collection<Role> roles;
 
+
     public BankCardUser() {}
 
-    public BankCardUser(String username, String password, String email, List<BankCard> bankCards) {
+    public BankCardUser(String username, String email, String password, Collection<Role> roles) {
         this.username = username;
-        this.password = password;
         this.email = email;
-        this.bankCards = bankCards;
+        this.password = password;
+        this.roles = roles;
     }
 
     public int getId() {
@@ -63,8 +65,16 @@ public class BankCardUser {
         return bankCards;
     }
 
+    public Collection<Role> getRoles() {
+        return roles;
+    }
+
     public void setId(int id) {
         this.id = id;
+    }
+
+    public void setBankCards(List<BankCard> bankCards) {
+        this.bankCards = bankCards;
     }
 
     @Override
