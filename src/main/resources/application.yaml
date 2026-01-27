@@ -12,3 +12,6 @@ cors:
 jwt:
   lifetime:
   secret:
+bank-card:
+  encryption-key:
+  lifetime:

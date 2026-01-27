@@ -15,8 +15,11 @@ public class BankCard {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "card_number")
-    private String cardNumber;
+    @Column(name = "encrypted_card_number")
+    private String encryptedCardNumber;
+
+    @Column(name = "masked_card_number")
+    private String maskedCardNumber;
 
     @Column(name = "balance")
     private BigDecimal balance;
@@ -35,10 +38,11 @@ public class BankCard {
 
     public BankCard() {}
 
-    public BankCard(String cardNumber, BigDecimal balance, BankCardStatus status, LocalDate expiryDate) {
-        this.cardNumber = cardNumber;
-        this.balance = balance;
-        this.status = status;
+    public BankCard(String encryptedCardNumber, String maskedCardNumber, LocalDate expiryDate) {
+        this.encryptedCardNumber = encryptedCardNumber;
+        this.maskedCardNumber = maskedCardNumber;
+        this.balance = BigDecimal.valueOf(0.00);
+        this.status = BankCardStatus.ACTIVE;
         this.expiryDate = expiryDate;
     }
 
@@ -46,8 +50,12 @@ public class BankCard {
         return id;
     }
 
-    public String getCardNumber() {
-        return cardNumber;
+    public String getEncryptedCardNumber() {
+        return encryptedCardNumber;
+    }
+
+    public String getMaskedCardNumber() {
+        return maskedCardNumber;
     }
 
     public BigDecimal getBalance() {
@@ -64,5 +72,21 @@ public class BankCard {
 
     public BankCardUser getUser() {
         return user;
+    }
+
+    public void setBalance(BigDecimal balance) {
+        this.balance = balance;
+    }
+
+    public void setStatus(BankCardStatus status) {
+        this.status = status;
+    }
+
+    public void setExpiryDate(LocalDate expiryDate) {
+        this.expiryDate = expiryDate;
+    }
+
+    public void setUser(BankCardUser user) {
+        this.user = user;
     }
 }
