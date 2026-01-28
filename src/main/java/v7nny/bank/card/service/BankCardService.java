@@ -1,1 +1,95 @@
-package v7nny.bank.card.service;import org.springframework.beans.factory.annotation.Autowired;import org.springframework.beans.factory.annotation.Value;import org.springframework.stereotype.Service;import org.springframework.transaction.annotation.Transactional;import v7nny.bank.card.entity.BankCard;import v7nny.bank.card.entity.enums.BankCardStatus;import v7nny.bank.card.exception.*;import v7nny.bank.card.repository.BankCardRepository;import v7nny.bank.card.util.CardNumberEncryptor;import java.security.SecureRandom;import java.time.LocalDate;@Service@Transactional(readOnly = true)public class BankCardService {    private final BankCardRepository bankCardRepository;    private final BankCardUserService userService;    private final CardNumberEncryptor cardNumberEncryptor;    private final LocalDate bankCardExpiryDate;    @Autowired    public BankCardService(BankCardRepository bankCardRepository, BankCardUserService userService,                           CardNumberEncryptor cardNumberEncryptor, @Value("${bank-card.lifetime-in-years}") int cardLifetimeInYears) {        this.bankCardRepository = bankCardRepository;        this.userService = userService;        this.cardNumberEncryptor = cardNumberEncryptor;        this.bankCardExpiryDate = LocalDate.now().plusYears(cardLifetimeInYears);    }    public BankCard findOneById(int id) throws BankCardNotFoundException {        return bankCardRepository.findById(id).orElseThrow(() ->                new BankCardNotFoundException("Bank card with id %d not found".formatted(id)));    }    public Iterable<BankCard> findAll() {        return bankCardRepository.findAll();    }    public String getDecryptedCardNumberByCardId(int cardId) throws BankCardNotFoundException, CardNumberDecryptException {        var bankCard = findOneById(cardId);        return cardNumberEncryptor.decryptCardNumber(bankCard.getEncryptedCardNumber());    }    @Transactional    public void changeStatus(int id, BankCardStatus newStatus) throws BankCardNotFoundException, CardStatusAlreadySetException, CardExpiredException {        var card = findOneById(id);        validateCardStatus(card, newStatus);        card.setStatus(newStatus);        bankCardRepository.save(card);    }    @Transactional    public BankCard create(int userId) throws UserNotFoundException, CardNumberEncryptException {        String cardNumber = generateCardNumber();        String maskedCardNumber = cardNumberEncryptor.maskCardNumber(cardNumber);        String encryptedCardNumber = cardNumberEncryptor.encryptCardNumber(cardNumber);        var user = userService.findOneById(userId);        var bankCard = new BankCard(encryptedCardNumber, maskedCardNumber, bankCardExpiryDate, user);        return bankCardRepository.save(bankCard);    }    @Transactional    public void deleteById(int id) throws BankCardNotFoundException {        int result = bankCardRepository.deleteByIdL(id);        if(result == 0) throw new BankCardNotFoundException("Bank card with id %d not found".formatted(id));    }    private String generateCardNumber() {        var random = new SecureRandom();        var stringBuilder = new StringBuilder();        for(int i = 0; i < 16; ++i) {            stringBuilder.append(random.nextInt(10));        }        return stringBuilder.toString();    }    private void validateCardStatus(BankCard card, BankCardStatus newStatus) throws CardStatusAlreadySetException, CardExpiredException {        if(card.isCardExpired()) throw new CardExpiredException("Bank card is expired");        if(card.getStatus() == newStatus) throw new CardStatusAlreadySetException("Bank card already has this status set");    }}
+package v7nny.bank.card.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import v7nny.bank.card.entity.BankCard;
+import v7nny.bank.card.entity.enums.BankCardStatus;
+import v7nny.bank.card.exception.*;
+import v7nny.bank.card.repository.BankCardRepository;
+import v7nny.bank.card.util.CardNumberEncryptor;
+
+import java.security.SecureRandom;
+import java.time.LocalDate;
+
+@Service
+@Transactional(readOnly = true)
+public class BankCardService {
+
+    private final BankCardRepository bankCardRepository;
+
+    private final BankCardUserService userService;
+
+    private final CardNumberEncryptor cardNumberEncryptor;
+
+    private final LocalDate bankCardExpiryDate;
+
+
+    @Autowired
+    public BankCardService(BankCardRepository bankCardRepository, BankCardUserService userService,
+                           CardNumberEncryptor cardNumberEncryptor, @Value("${bank-card.lifetime-in-years}") int cardLifetimeInYears) {
+        this.bankCardRepository = bankCardRepository;
+        this.userService = userService;
+        this.cardNumberEncryptor = cardNumberEncryptor;
+        this.bankCardExpiryDate = LocalDate.now().plusYears(cardLifetimeInYears);
+    }
+
+    public BankCard findOneById(int id) throws BankCardNotFoundException {
+        return bankCardRepository.findById(id).orElseThrow(() ->
+                new BankCardNotFoundException("Bank card with id %d not found".formatted(id)));
+    }
+
+    public Iterable<BankCard> findAll() {
+        return bankCardRepository.findAll();
+    }
+
+    public String getDecryptedCardNumberByCardId(int cardId) throws BankCardNotFoundException, CardNumberDecryptException {
+        var bankCard = findOneById(cardId);
+
+        return cardNumberEncryptor.decryptCardNumber(bankCard.getEncryptedCardNumber());
+    }
+
+    @Transactional
+    public void changeStatus(int id, BankCardStatus newStatus) throws BankCardNotFoundException, CardStatusAlreadySetException, CardExpiredException {
+        var card = findOneById(id);
+
+        validateCardStatus(card, newStatus);
+        card.setStatus(newStatus);
+        bankCardRepository.save(card);
+    }
+
+    @Transactional
+    public BankCard create(int userId) throws UserNotFoundException, CardNumberEncryptException {
+        String cardNumber = generateCardNumber();
+        String maskedCardNumber = cardNumberEncryptor.maskCardNumber(cardNumber);
+        String encryptedCardNumber = cardNumberEncryptor.encryptCardNumber(cardNumber);
+        var user = userService.findOneById(userId);
+        var bankCard = new BankCard(encryptedCardNumber, maskedCardNumber, bankCardExpiryDate, user);
+
+        return bankCardRepository.save(bankCard);
+    }
+
+    @Transactional
+    public void deleteById(int id) throws BankCardNotFoundException {
+        int result = bankCardRepository.deleteByIdL(id);
+
+        if(result == 0) throw new BankCardNotFoundException("Bank card with id %d not found".formatted(id));
+    }
+
+    private String generateCardNumber() {
+        var random = new SecureRandom();
+        var stringBuilder = new StringBuilder();
+
+        for(int i = 0; i < 16; ++i) {
+            stringBuilder.append(random.nextInt(10));
+        }
+
+        return stringBuilder.toString();
+    }
+
+    private void validateCardStatus(BankCard card, BankCardStatus newStatus) throws CardStatusAlreadySetException, CardExpiredException {
+        if(card.isCardExpired()) throw new CardExpiredException("Bank card is expired");
+        if(card.getStatus() == newStatus) throw new CardStatusAlreadySetException("Bank card already has this status set");
+    }
+}
