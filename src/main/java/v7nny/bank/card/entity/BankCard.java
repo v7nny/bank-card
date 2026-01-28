@@ -1,7 +1,12 @@
 package v7nny.bank.card.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonKey;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 import jakarta.persistence.*;
+import org.hibernate.annotations.Fetch;
+import tools.jackson.databind.annotation.JsonSerialize;
 import v7nny.bank.card.entity.enums.BankCardStatus;
 
 import java.math.BigDecimal;
@@ -12,6 +17,7 @@ import java.time.LocalDate;
 public class BankCard {
 
     @Id
+    @JsonProperty("iD")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
@@ -25,12 +31,13 @@ public class BankCard {
     private BigDecimal balance;
 
     @Column(name = "status")
+    @Enumerated(EnumType.STRING)
     private BankCardStatus status;
 
     @Column(name = "expiry_date")
     private LocalDate expiryDate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private BankCardUser user;
@@ -38,12 +45,14 @@ public class BankCard {
 
     public BankCard() {}
 
-    public BankCard(String encryptedCardNumber, String maskedCardNumber, LocalDate expiryDate) {
+    public BankCard(String encryptedCardNumber, String maskedCardNumber,
+                    LocalDate expiryDate, BankCardUser user) {
         this.encryptedCardNumber = encryptedCardNumber;
         this.maskedCardNumber = maskedCardNumber;
         this.balance = BigDecimal.valueOf(0.00);
         this.status = BankCardStatus.ACTIVE;
         this.expiryDate = expiryDate;
+        this.user = user;
     }
 
     public int getId() {
@@ -88,5 +97,21 @@ public class BankCard {
 
     public void setUser(BankCardUser user) {
         this.user = user;
+    }
+
+    public boolean isCardExpired() {
+        return this.status == BankCardStatus.EXPIRED;
+    }
+
+    @Override
+    public String toString() {
+        return "BankCard{" +
+                "expiryDate=" + expiryDate +
+                ", status=" + status +
+                ", balance=" + balance +
+                ", maskedCardNumber='" + maskedCardNumber + '\'' +
+                ", encryptedCardNumber='" + encryptedCardNumber + '\'' +
+                ", id=" + id +
+                '}';
     }
 }

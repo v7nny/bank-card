@@ -26,7 +26,7 @@ public class CardNumberEncryptor {
 
 
     public CardNumberEncryptor(@Value("${bank-card.encryption-key}") String secretKey) {
-        this.secretKey = createAesKey(secretKey);
+        this.secretKey = decodeSecretKeyFromString(secretKey);
     }
 
     public String encryptCardNumber(String cardNumber) throws CardNumberEncryptException {
@@ -67,10 +67,10 @@ public class CardNumberEncryptor {
     }
 
     public String maskCardNumber(String cardNumber) {
-        return "**** **** ****" + cardNumber.substring(12);
+        return "**** **** **** " + cardNumber.substring(12);
     }
 
-    private SecretKey createAesKey(String key) {
+    private SecretKey decodeSecretKeyFromString(String key) {
         return new SecretKeySpec(Base64.getDecoder().decode(key), "AES");
     }
 }

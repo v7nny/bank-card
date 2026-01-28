@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import v7nny.bank.card.entity.BankCardUser;
+import v7nny.bank.card.exception.UserNotFoundException;
 import v7nny.bank.card.repository.BankCardUserRepository;
 
 @Service
@@ -16,6 +17,11 @@ public class BankCardUserService {
     @Autowired
     public BankCardUserService(BankCardUserRepository userRepository) {
         this.userRepository = userRepository;
+    }
+
+    public BankCardUser findOneById(int id) throws UserNotFoundException {
+        return userRepository.findById(id).orElseThrow(() ->
+                new UserNotFoundException("User not found"));
     }
 
     public boolean isUsernameTaken(String username) {
