@@ -2,6 +2,7 @@ package v7nny.bank.card.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
@@ -53,12 +54,12 @@ public class BankCardUser {
         return username;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
     public String getEmail() {
         return email;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     public List<BankCard> getBankCards() {
@@ -71,6 +72,17 @@ public class BankCardUser {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public void setUsername(String newUsername) {
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public void setBankCards(List<BankCard> bankCards) {
