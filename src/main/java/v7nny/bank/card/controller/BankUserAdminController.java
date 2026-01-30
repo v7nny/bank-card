@@ -11,7 +11,7 @@ import v7nny.bank.card.service.BankCardUserService;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/admin/users")
 public class BankUserAdminController {
 
     private final BankCardUserService userService;
@@ -22,7 +22,7 @@ public class BankUserAdminController {
         this.userService = userService;
     }
 
-    @PatchMapping("/{id}/change-username")
+    @PatchMapping("/{id}/username")
     public ResponseEntity<?> changeUsername(@PathVariable int id, String newUsername) {
         try {
             userService.changeUsernameById(id, newUsername);
@@ -34,7 +34,7 @@ public class BankUserAdminController {
         }
     }
 
-    @PatchMapping("/{id}/change-email")
+    @PatchMapping("/{id}/email")
     public ResponseEntity<?> changeEmail(@PathVariable int id, String newEmail) {
         try {
             userService.changeEmailById(id, newEmail);
@@ -46,7 +46,7 @@ public class BankUserAdminController {
         }
     }
 
-    @PatchMapping("/{id}/change-password")
+    @PatchMapping("/{id}/password")
     public ResponseEntity<?> changePassword(@PathVariable int id, String newPassword) {
         try {
             userService.changePasswordById(id, newPassword);

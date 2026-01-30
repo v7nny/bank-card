@@ -24,9 +24,11 @@ public class BankCardUser {
     @Column(name = "password")
     private String password;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<BankCard> bankCards;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<BlockBankCardRequest> blockCardRequests;
 
     @ManyToMany
     @JoinTable(
@@ -75,6 +77,7 @@ public class BankCardUser {
     }
 
     public void setUsername(String newUsername) {
+        this.username = newUsername;
     }
 
     public void setEmail(String email) {
@@ -85,8 +88,8 @@ public class BankCardUser {
         this.password = password;
     }
 
-    public void setBankCards(List<BankCard> bankCards) {
-        this.bankCards = bankCards;
+    public List<BlockBankCardRequest> getBlockCardRequests() {
+        return blockCardRequests;
     }
 
     @Override

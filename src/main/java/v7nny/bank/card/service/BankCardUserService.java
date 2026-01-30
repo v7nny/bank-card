@@ -2,7 +2,6 @@ package v7nny.bank.card.service;
 
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +28,11 @@ public class BankCardUserService {
                 new UserNotFoundException("User not found"));
     }
 
+    public BankCardUser findOneByUsername(String username) throws UserNotFoundException {
+        return userRepository.findOneByUsername(username).orElseThrow(() ->
+                new UserNotFoundException("User not found"));
+    }
+
     public boolean isUsernameTaken(String username) {
         return userRepository.findOneByUsername(username).isPresent();
     }
@@ -41,7 +45,7 @@ public class BankCardUserService {
     public void changeUsernameById(int id, String newUsername) throws UserNotFoundException, BadRequestException {
         var user = findOneById(id);
 
-        if (user.getUsername().equals(newUsername)) throw new BadCredentialsException("Usernames match");
+        if (user.getUsername().equals(newUsername)) throw new BadRequestException("Usernames match");
 
         user.setUsername(newUsername);
         userRepository.save(user);
@@ -51,7 +55,7 @@ public class BankCardUserService {
     public void changeEmailById(int id, String newEmail) throws UserNotFoundException, BadRequestException {
         var user = findOneById(id);
 
-        if(user.getEmail().equals(newEmail)) throw new BadCredentialsException("Emails match");
+        if(user.getEmail().equals(newEmail)) throw new BadRequestException("Emails match");
 
         user.setEmail(newEmail);
         userRepository.save(user);
@@ -61,13 +65,11 @@ public class BankCardUserService {
     public void changePasswordById(int id, String newPassword) throws UserNotFoundException, BadRequestException {
         var user = findOneById(id);
 
-        if (passwordEncoder.matches(newPassword, user.getPassword())) throw new BadCredentialsException("Passwords match");
+        if (passwordEncoder.matches(newPassword, user.getPassword())) throw new BadRequestException("Passwords match");
 
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
-
-
 
     @Transactional
     public void save(BankCardUser user) {

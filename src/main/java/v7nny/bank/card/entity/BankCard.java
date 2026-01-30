@@ -38,7 +38,6 @@ public class BankCard {
     private LocalDate expiryDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnore
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private BankCardUser user;
 

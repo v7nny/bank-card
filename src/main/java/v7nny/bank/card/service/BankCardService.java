@@ -2,6 +2,8 @@ package v7nny.bank.card.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import v7nny.bank.card.entity.BankCard;
@@ -10,8 +12,10 @@ import v7nny.bank.card.exception.*;
 import v7nny.bank.card.repository.BankCardRepository;
 import v7nny.bank.card.util.CardNumberEncryptor;
 
+import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -44,6 +48,24 @@ public class BankCardService {
         return bankCardRepository.findAll();
     }
 
+    public List<BankCard> findByUsernameAndCardNumberLike(int page, int size, String cardNumber, String username) throws UserNotFoundException {
+        var user = userService.findOneByUsername(username);
+
+        if(cardNumber == null) return bankCardRepository.findAllByUserId(user.getId(), PageRequest.of(page, size));
+
+        return bankCardRepository.findByUserIdAndCardNumberLike(
+                user.getId(), cardNumber, PageRequest.of(page, size));
+    }
+
+    public BigDecimal getBalanceByUsername(int id, String username) throws BankCardNotFoundException, CardAccessDeniedException {
+        var card = findOneById(id);
+
+        if(!card.getUser().getUsername().equals(username))
+            throw new CardAccessDeniedException("User %s doesn't have access to this bank card".formatted(username));
+
+        return card.getBalance();
+    }
+
     public String getDecryptedCardNumberByCardId(int cardId) throws BankCardNotFoundException, CardNumberDecryptException {
         var bankCard = findOneById(cardId);
 
@@ -72,7 +94,7 @@ public class BankCardService {
 
     @Transactional
     public void deleteById(int id) throws BankCardNotFoundException {
-        int result = bankCardRepository.deleteByIdL(id);
+        int result = bankCardRepository.deleteById(id);
 
         if(result == 0) throw new BankCardNotFoundException("Bank card with id %d not found".formatted(id));
     }
