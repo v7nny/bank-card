@@ -3,9 +3,10 @@ package v7nny.bank.card.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import v7nny.bank.card.dto.ResultTransferDTO;
+import v7nny.bank.card.dto.TransferDTO;
 import v7nny.bank.card.entity.BankCard;
 import v7nny.bank.card.entity.enums.BankCardStatus;
 import v7nny.bank.card.exception.*;
@@ -44,8 +45,8 @@ public class BankCardService {
                 new BankCardNotFoundException("Bank card with id %d not found".formatted(id)));
     }
 
-    public Iterable<BankCard> findAll() {
-        return bankCardRepository.findAll();
+    public List<BankCard> findAll(int page, int size) {
+        return bankCardRepository.findAllAsList(PageRequest.of(page, size));
     }
 
     public List<BankCard> findByUsernameAndCardNumberLike(int page, int size, String cardNumber, String username) throws UserNotFoundException {
@@ -93,6 +94,23 @@ public class BankCardService {
     }
 
     @Transactional
+    public ResultTransferDTO transferBetweenOwnCardsByUsername (TransferDTO transferDTO, String username) throws BankCardNotFoundException, CardAccessDeniedException, InsufficientFundsException {
+        var fromCard = findOneById(transferDTO.fromCardId());
+        var toCard = findOneById(transferDTO.toCardId());
+        var balanceBeforeTransferOnFromCard = fromCard.getBalance();
+        var balanceBeforeTransferOnToCard = toCard.getBalance();
+
+        validateBalance(balanceBeforeTransferOnFromCard, transferDTO.amount());
+        validateCardsOwnership(fromCard, toCard, username);
+        fromCard.decreaseBalance(transferDTO.amount());
+        toCard.increaseBalance(transferDTO.amount());
+        bankCardRepository.saveAll(List.of(fromCard, toCard));
+
+        return new ResultTransferDTO(balanceBeforeTransferOnFromCard, fromCard.getBalance(),
+                balanceBeforeTransferOnToCard, toCard.getBalance());
+    }
+
+    @Transactional
     public void deleteById(int id) throws BankCardNotFoundException {
         int result = bankCardRepository.deleteById(id);
 
@@ -113,5 +131,15 @@ public class BankCardService {
     private void validateCardStatus(BankCard card, BankCardStatus newStatus) throws CardStatusAlreadySetException, CardExpiredException {
         if(card.isCardExpired()) throw new CardExpiredException("Bank card is expired");
         if(card.getStatus() == newStatus) throw new CardStatusAlreadySetException("Bank card already has this status set");
+    }
+
+    private void validateCardsOwnership(BankCard fromCard, BankCard toCard, String username) throws CardAccessDeniedException {
+        if(!fromCard.getUser().getUsername().equals(username) || !toCard.getUser().getUsername().equals(username))
+            throw new CardAccessDeniedException("User %s doesn't have access to one of the bank cards".formatted(username));
+    }
+
+    private void validateBalance(BigDecimal fromCardBalance, BigDecimal amount) throws InsufficientFundsException {
+        if(fromCardBalance.compareTo(amount) < 0)
+            throw new InsufficientFundsException("There are not enough funds on the card");
     }
 }

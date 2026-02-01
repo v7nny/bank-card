@@ -1,6 +1,7 @@
 package v7nny.bank.card.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import v7nny.bank.card.entity.BlockBankCardRequest;
@@ -33,8 +34,8 @@ public class BlockBankCardRequestService {
                 new BlockBankCardRequestNotFoundException("Block bank card request with id %d not found".formatted(id)));
     }
 
-    public Iterable<BlockBankCardRequest> findAll() {
-        return blockBankCardRequestRepository.findAll();
+    public List<BlockBankCardRequest> findAll(int page, int size) {
+        return blockBankCardRequestRepository.findAllAsList(PageRequest.of(page, size));
     }
 
     public List<BlockBankCardRequest> findAllByUsername(String username) throws UserNotFoundException {
@@ -47,7 +48,7 @@ public class BlockBankCardRequestService {
     public BlockBankCardRequest create(int cardId, String username) throws BankCardNotFoundException, CardAccessDeniedException {
         var card = bankCardService.findOneById(cardId);
 
-        if(card.getUser().getUsername().equals(username))
+        if(!card.getUser().getUsername().equals(username))
             throw new CardAccessDeniedException("User %s doesn't have access to this bank card".formatted(username));
 
         var blockRequest = new BlockBankCardRequest(card);

@@ -10,6 +10,7 @@ import v7nny.bank.card.exception.CardExpiredException;
 import v7nny.bank.card.exception.CardStatusAlreadySetException;
 import v7nny.bank.card.service.BlockBankCardRequestService;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -25,8 +26,8 @@ public class BlockBankCardRequestAdminController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAll() {
-        Iterable<BlockBankCardRequest> blockBankCardRequests = blockBankCardRequestService.findAll();
+    public ResponseEntity<?> getAll(@RequestParam int page, int size) {
+        List<BlockBankCardRequest> blockBankCardRequests = blockBankCardRequestService.findAll(page, size);
 
         return ResponseEntity.status(200).body(blockBankCardRequests);
     }

@@ -1,12 +1,7 @@
 package v7nny.bank.card.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonKey;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
 import jakarta.persistence.*;
-import org.hibernate.annotations.Fetch;
-import tools.jackson.databind.annotation.JsonSerialize;
 import v7nny.bank.card.entity.enums.BankCardStatus;
 
 import java.math.BigDecimal;
@@ -17,10 +12,10 @@ import java.time.LocalDate;
 public class BankCard {
 
     @Id
-    @JsonProperty("iD")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @JsonIgnore
     @Column(name = "encrypted_card_number")
     private String encryptedCardNumber;
 
@@ -37,6 +32,7 @@ public class BankCard {
     @Column(name = "expiry_date")
     private LocalDate expiryDate;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private BankCardUser user;
@@ -90,16 +86,20 @@ public class BankCard {
         this.status = status;
     }
 
-    public void setExpiryDate(LocalDate expiryDate) {
-        this.expiryDate = expiryDate;
-    }
-
     public void setUser(BankCardUser user) {
         this.user = user;
     }
 
     public boolean isCardExpired() {
         return this.status == BankCardStatus.EXPIRED;
+    }
+
+    public void increaseBalance(BigDecimal increaseSum) {
+        this.balance = this.balance.add(increaseSum);
+    }
+
+    public void decreaseBalance(BigDecimal decreaseBalance) {
+        this.balance = this.balance.subtract(decreaseBalance);
     }
 
     @Override

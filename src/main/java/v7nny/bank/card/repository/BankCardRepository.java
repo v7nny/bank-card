@@ -12,6 +12,9 @@ import java.util.List;
 @Repository
 public interface BankCardRepository extends JpaRepository<BankCard, Integer> {
 
+    @Query("SELECT b FROM BankCard b")
+    List<BankCard> findAllAsList(Pageable pageable);
+
     List<BankCard> findAllByUserId(int id, Pageable pageable);
 
     @Query("SELECT b FROM BankCard b WHERE b.user.id = :userId AND b.maskedCardNumber LIKE %:maskedCardNumber%")

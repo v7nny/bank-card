@@ -2,7 +2,6 @@ package v7nny.bank.card.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
@@ -24,13 +23,16 @@ public class BankCardUser {
     @Column(name = "password")
     private String password;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<BankCard> bankCards;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<BlockBankCardRequest> blockCardRequests;
 
     @ManyToMany
+    @JsonIgnore
     @JoinTable(
             name = "Users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -68,6 +70,10 @@ public class BankCardUser {
         return bankCards;
     }
 
+    public List<BlockBankCardRequest> getBlockCardRequests() {
+        return blockCardRequests;
+    }
+
     public Collection<Role> getRoles() {
         return roles;
     }
@@ -86,10 +92,6 @@ public class BankCardUser {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public List<BlockBankCardRequest> getBlockCardRequests() {
-        return blockCardRequests;
     }
 
     @Override

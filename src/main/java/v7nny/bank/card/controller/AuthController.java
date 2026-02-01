@@ -1,19 +1,15 @@
 package v7nny.bank.card.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import v7nny.bank.card.dto.SignInDTO;
 import v7nny.bank.card.dto.SignUpDTO;
 import v7nny.bank.card.exception.EmailAlreadyTakenException;
 import v7nny.bank.card.exception.UsernameAlreadyTakenException;
 import v7nny.bank.card.service.AuthService;
-import v7nny.bank.card.service.BankCardUserService;
-
 import java.util.Map;
 
 @RestController
@@ -22,7 +18,7 @@ public class AuthController {
 
     private final AuthService authService;
 
-
+    @Autowired
     public AuthController(AuthService authService) {
         this.authService = authService;
     }

@@ -8,6 +8,7 @@ import v7nny.bank.card.entity.enums.BankCardStatus;
 import v7nny.bank.card.exception.*;
 import v7nny.bank.card.service.BankCardService;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -23,8 +24,8 @@ public class BankCardAdminController {
     }
 
     @GetMapping
-    public ResponseEntity<Iterable<BankCard>> getAll() {
-        return ResponseEntity.status(200).body(bankCardService.findAll());
+    public ResponseEntity<List<BankCard>> getAll(@RequestParam int page, @RequestParam int size) {
+        return ResponseEntity.status(200).body(bankCardService.findAll(page, size));
     }
 
     @PostMapping

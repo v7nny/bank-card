@@ -2,17 +2,14 @@ package v7nny.bank.card.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import v7nny.bank.card.entity.BlockBankCardRequest;
 import v7nny.bank.card.exception.BankCardNotFoundException;
 import v7nny.bank.card.exception.CardAccessDeniedException;
 import v7nny.bank.card.exception.UserNotFoundException;
 import v7nny.bank.card.service.BlockBankCardRequestService;
-
 import java.security.Principal;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -30,7 +27,10 @@ public class BlockBankCardRequestController {
     @GetMapping("/my")
     public ResponseEntity<?> getMy(Principal principal) {
         try {
-            return ResponseEntity.status(200).body(blockBankCardRequestService.findAllByUsername(principal.getName()));
+            List<BlockBankCardRequest> myBlockBankCardRequests = blockBankCardRequestService
+                    .findAllByUsername(principal.getName());
+
+            return ResponseEntity.status(200).body(myBlockBankCardRequests);
         } catch (UserNotFoundException e) {
             return ResponseEntity.status(404).body(Map.of("message", e.getMessage()));
         }
