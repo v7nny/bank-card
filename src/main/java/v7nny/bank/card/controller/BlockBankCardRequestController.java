@@ -2,11 +2,16 @@ package v7nny.bank.card.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import v7nny.bank.card.documentation.blockcardrequest.user.CreateBlockCardRequestDoc;
+import v7nny.bank.card.documentation.blockcardrequest.user.GetMyBlockCardRequestsDoc;
 import v7nny.bank.card.entity.BlockBankCardRequest;
-import v7nny.bank.card.exception.BankCardNotFoundException;
-import v7nny.bank.card.exception.CardAccessDeniedException;
-import v7nny.bank.card.exception.UserNotFoundException;
+import v7nny.bank.card.exception.bankcard.BankCardNotFoundException;
+import v7nny.bank.card.exception.bankcard.CardAccessDeniedException;
+import v7nny.bank.card.exception.user.UserNotFoundException;
 import v7nny.bank.card.service.BlockBankCardRequestService;
 import java.security.Principal;
 import java.util.List;
@@ -25,6 +30,7 @@ public class BlockBankCardRequestController {
     }
 
     @GetMapping("/my")
+    @GetMyBlockCardRequestsDoc
     public ResponseEntity<?> getMy(Principal principal) {
         try {
             List<BlockBankCardRequest> myBlockBankCardRequests = blockBankCardRequestService
@@ -37,6 +43,7 @@ public class BlockBankCardRequestController {
     }
 
     @PostMapping
+    @CreateBlockCardRequestDoc
     public ResponseEntity<?> create(int cardId, Principal principal) {
         try {
             BlockBankCardRequest blockRequest = blockBankCardRequestService.create(cardId, principal.getName());

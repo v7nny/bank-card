@@ -6,6 +6,7 @@ import v7nny.bank.card.entity.enums.BankCardStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "Bank_cards")
@@ -31,6 +32,10 @@ public class BankCard {
 
     @Column(name = "expiry_date")
     private LocalDate expiryDate;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "bankCard", fetch = FetchType.LAZY)
+    private List<BlockBankCardRequest> blockRequests;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
@@ -78,10 +83,6 @@ public class BankCard {
         return user;
     }
 
-    public void setBalance(BigDecimal balance) {
-        this.balance = balance;
-    }
-
     public void setStatus(BankCardStatus status) {
         this.status = status;
     }
@@ -90,6 +91,7 @@ public class BankCard {
         this.user = user;
     }
 
+    @JsonIgnore
     public boolean isCardExpired() {
         return this.status == BankCardStatus.EXPIRED;
     }

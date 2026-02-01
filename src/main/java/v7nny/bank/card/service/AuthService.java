@@ -9,12 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 import v7nny.bank.card.dto.SignInDTO;
 import v7nny.bank.card.dto.SignUpDTO;
 import v7nny.bank.card.entity.BankCardUser;
-import v7nny.bank.card.exception.EmailAlreadyTakenException;
-import v7nny.bank.card.exception.UsernameAlreadyTakenException;
+import v7nny.bank.card.exception.user.EmailAlreadyTakenException;
+import v7nny.bank.card.exception.user.UsernameAlreadyTakenException;
 import v7nny.bank.card.security.JwtProvider;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)

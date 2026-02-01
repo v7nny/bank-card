@@ -1,6 +1,5 @@
 package v7nny.bank.card.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import v7nny.bank.card.entity.enums.BlockBankCardRequestStatus;
@@ -17,12 +16,12 @@ public class BlockBankCardRequest {
     @Enumerated(EnumType.STRING)
     private BlockBankCardRequestStatus status;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "bank_card_id", referencedColumnName = "id")
     private BankCard bankCard;
 
     @JsonIgnoreProperties("hibernateLazyInitializer")
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private BankCardUser user;
 

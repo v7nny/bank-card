@@ -9,7 +9,8 @@ import v7nny.bank.card.dto.ResultTransferDTO;
 import v7nny.bank.card.dto.TransferDTO;
 import v7nny.bank.card.entity.BankCard;
 import v7nny.bank.card.entity.enums.BankCardStatus;
-import v7nny.bank.card.exception.*;
+import v7nny.bank.card.exception.bankcard.*;
+import v7nny.bank.card.exception.user.UserNotFoundException;
 import v7nny.bank.card.repository.BankCardRepository;
 import v7nny.bank.card.util.CardNumberEncryptor;
 

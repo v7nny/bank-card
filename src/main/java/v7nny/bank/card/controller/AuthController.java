@@ -5,10 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
+import v7nny.bank.card.documentation.auth.SignInDoc;
+import v7nny.bank.card.documentation.auth.SignUpDoc;
 import v7nny.bank.card.dto.SignInDTO;
 import v7nny.bank.card.dto.SignUpDTO;
-import v7nny.bank.card.exception.EmailAlreadyTakenException;
-import v7nny.bank.card.exception.UsernameAlreadyTakenException;
+import v7nny.bank.card.exception.user.EmailAlreadyTakenException;
+import v7nny.bank.card.exception.user.UsernameAlreadyTakenException;
 import v7nny.bank.card.service.AuthService;
 import java.util.Map;
 
@@ -24,6 +26,7 @@ public class AuthController {
     }
 
     @PostMapping("/sign-up")
+    @SignUpDoc
     public ResponseEntity<?> signUp(@RequestBody SignUpDTO signUpDTO, HttpServletResponse response) {
         try {
             var cookie = authService.signUp(signUpDTO);
@@ -36,6 +39,7 @@ public class AuthController {
     }
 
     @PostMapping("/sign-in")
+    @SignInDoc
     public ResponseEntity<?> signIn(@RequestBody SignInDTO signInDTO, HttpServletResponse response) {
         try {
             var cookie = authService.signIn(signInDTO);

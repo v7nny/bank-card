@@ -2,8 +2,8 @@ package v7nny.bank.card.util;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import v7nny.bank.card.exception.CardNumberDecryptException;
-import v7nny.bank.card.exception.CardNumberEncryptException;
+import v7nny.bank.card.exception.bankcard.CardNumberDecryptException;
+import v7nny.bank.card.exception.bankcard.CardNumberEncryptException;
 import javax.crypto.*;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;

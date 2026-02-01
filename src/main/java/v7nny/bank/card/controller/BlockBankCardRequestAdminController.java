@@ -3,11 +3,13 @@ package v7nny.bank.card.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import v7nny.bank.card.documentation.blockcardrequest.admin.CompleteBlockCardRequestDoc;
+import v7nny.bank.card.documentation.blockcardrequest.admin.FindAllBlockCardRequestsDoc;
 import v7nny.bank.card.entity.BlockBankCardRequest;
-import v7nny.bank.card.exception.BankCardNotFoundException;
-import v7nny.bank.card.exception.BlockBankCardRequestNotFoundException;
-import v7nny.bank.card.exception.CardExpiredException;
-import v7nny.bank.card.exception.CardStatusAlreadySetException;
+import v7nny.bank.card.exception.bankcard.BankCardNotFoundException;
+import v7nny.bank.card.exception.blockcardrequest.BlockBankCardRequestNotFoundException;
+import v7nny.bank.card.exception.bankcard.CardExpiredException;
+import v7nny.bank.card.exception.bankcard.CardStatusAlreadySetException;
 import v7nny.bank.card.service.BlockBankCardRequestService;
 
 import java.util.List;
@@ -26,6 +28,7 @@ public class BlockBankCardRequestAdminController {
     }
 
     @GetMapping
+    @FindAllBlockCardRequestsDoc
     public ResponseEntity<?> getAll(@RequestParam int page, int size) {
         List<BlockBankCardRequest> blockBankCardRequests = blockBankCardRequestService.findAll(page, size);
 
@@ -33,6 +36,7 @@ public class BlockBankCardRequestAdminController {
     }
 
     @PatchMapping("/{id}/complete")
+    @CompleteBlockCardRequestDoc
     public ResponseEntity<?> completeBlockRequest(@PathVariable int id) {
         try {
             blockBankCardRequestService.completeBlockRequestById(id);
@@ -45,6 +49,4 @@ public class BlockBankCardRequestAdminController {
             return ResponseEntity.status(409).body(Map.of("message", e.getMessage()));
         }
     }
-
-
 }
