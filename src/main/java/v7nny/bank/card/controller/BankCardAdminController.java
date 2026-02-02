@@ -1,7 +1,10 @@
 package v7nny.bank.card.controller;
 
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import v7nny.bank.card.documentation.bankcard.admin.*;
 import v7nny.bank.card.entity.BankCard;
@@ -18,6 +21,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/admin/cards")
+@Validated
 public class BankCardAdminController {
 
     private final BankCardService bankCardService;
@@ -30,17 +34,20 @@ public class BankCardAdminController {
 
     @GetMapping
     @GetAllBankCardsDoc
-    public ResponseEntity<List<BankCard>> getAll(@RequestParam int page, @RequestParam int size) {
+    public ResponseEntity<?> getAll(@RequestParam @Min(value = 0, message = "{validation.page.index-min}") int page,
+                                    @RequestParam @Min(value = 1, message = "{validation.page.size-min}") int size) {
         return ResponseEntity.status(200).body(bankCardService.findAll(page, size));
     }
 
     @PostMapping
     @CreateBankCardDoc
-    public ResponseEntity<?> create(@RequestParam int userId) {
+    public ResponseEntity<?> create(@RequestParam @Min(value = 1, message= "{validation.id-min}") int userId) {
         try {
             BankCard savedCard = bankCardService.create(userId);
 
             return ResponseEntity.status(201).body(savedCard);
+        } catch(ConstraintViolationException e) {
+            return ResponseEntity.status(400).body(Map.of("message", e.getMessage()));
         } catch (UserNotFoundException e) {
             return ResponseEntity.status(404).body(Map.of("message", e.getMessage()));
         } catch (CardNumberEncryptException e) {
@@ -50,7 +57,7 @@ public class BankCardAdminController {
 
     @PatchMapping("/{id}/activate")
     @ActivateBankCardDoc
-    public ResponseEntity<?> activate(@PathVariable int id) {
+    public ResponseEntity<?> activate(@PathVariable @Min(value = 1, message = "${validation.id-min}") int id) {
         try {
             bankCardService.changeStatus(id, BankCardStatus.ACTIVE);
             return ResponseEntity.status(200).build();
@@ -65,7 +72,7 @@ public class BankCardAdminController {
 
     @PatchMapping("/{id}/block")
     @BlockBankCardDoc
-    public ResponseEntity<?> block(@PathVariable int id) {
+    public ResponseEntity<?> block(@PathVariable @Min(value = 1, message = "${validation.id-min}") int id) {
         try {
             bankCardService.changeStatus(id, BankCardStatus.BLOCKED);
             return ResponseEntity.status(200).build();
@@ -80,7 +87,7 @@ public class BankCardAdminController {
 
     @DeleteMapping("/{id}")
     @DeleteBankCardDoc
-    public ResponseEntity<?> delete(@PathVariable int id) {
+    public ResponseEntity<?> delete(@PathVariable @Min(value = 1, message = "${validation.id-min}") int id) {
         try {
             bankCardService.deleteById(id);
             return ResponseEntity.status(200).build();

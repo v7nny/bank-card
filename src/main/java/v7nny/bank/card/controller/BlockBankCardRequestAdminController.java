@@ -1,7 +1,9 @@
 package v7nny.bank.card.controller;
 
+import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import v7nny.bank.card.documentation.blockcardrequest.admin.CompleteBlockCardRequestDoc;
 import v7nny.bank.card.documentation.blockcardrequest.admin.FindAllBlockCardRequestsDoc;
@@ -17,6 +19,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/admin/block-card-requests")
+@Validated
 public class BlockBankCardRequestAdminController {
 
     private final BlockBankCardRequestService blockBankCardRequestService;
@@ -29,7 +32,8 @@ public class BlockBankCardRequestAdminController {
 
     @GetMapping
     @FindAllBlockCardRequestsDoc
-    public ResponseEntity<?> getAll(@RequestParam int page, int size) {
+    public ResponseEntity<?> getAll(@RequestParam @Min(value = 0, message = "{validation.page.index-min}") int page,
+                                    @RequestParam @Min(value = 1, message = "{validation.page.size-min}") int size) {
         List<BlockBankCardRequest> blockBankCardRequests = blockBankCardRequestService.findAll(page, size);
 
         return ResponseEntity.status(200).body(blockBankCardRequests);
@@ -37,7 +41,7 @@ public class BlockBankCardRequestAdminController {
 
     @PatchMapping("/{id}/complete")
     @CompleteBlockCardRequestDoc
-    public ResponseEntity<?> completeBlockRequest(@PathVariable int id) {
+    public ResponseEntity<?> completeBlockRequest(@PathVariable @Min(value = 1, message= "{validation.id-min}") int id) {
         try {
             blockBankCardRequestService.completeBlockRequestById(id);
             return ResponseEntity.status(200).build();

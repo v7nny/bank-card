@@ -1,7 +1,9 @@
 package v7nny.bank.card.controller;
 
+import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import v7nny.bank.card.documentation.bankcard.user.GetMyBankCardBalanceDoc;
 import v7nny.bank.card.documentation.bankcard.user.GetMyBankCardsDoc;
@@ -22,6 +24,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/cards")
+@Validated
 public class BankCardController {
 
     private final BankCardService bankCardService;
@@ -34,8 +37,10 @@ public class BankCardController {
 
     @GetMapping("/my")
     @GetMyBankCardsDoc
-    public ResponseEntity<?> getMy(@RequestParam int page, @RequestParam int size,
-                                    @RequestParam(required = false) String cardNumber, Principal principal) {
+    public ResponseEntity<?> getMy(@RequestParam @Min(value = 0, message = "{validation.page.index-min}") int page,
+                                   @RequestParam @Min(value = 1, message = "{validation.page.size-min}") int size,
+                                @RequestParam(required = false) @Min(value = 0, message = "{validation.card-number-min}") String cardNumber,
+                                   Principal principal) {
         try {
             List<BankCard> cards = bankCardService.findByUsernameAndCardNumberLike(
                     page, size, cardNumber, principal.getName());
@@ -48,7 +53,7 @@ public class BankCardController {
 
     @GetMapping("/{id}/balance")
     @GetMyBankCardBalanceDoc
-    public ResponseEntity<?> getBalance(@PathVariable int id, Principal principal) {
+    public ResponseEntity<?> getBalance(@PathVariable @Min(value = 1, message = "${validation.id-min}") int id, Principal principal) {
         try {
             BigDecimal balance = bankCardService.getBalanceByUsername(id, principal.getName());
 
@@ -62,7 +67,7 @@ public class BankCardController {
 
     @PatchMapping("/my/transfer")
     @TransferBetweenMyBankCardsDoc
-    public ResponseEntity<?> transferBetweenOwnCards(@RequestBody TransferDTO transferDTO, Principal principal) {
+    public ResponseEntity<?> transferBetweenOwnCards(@RequestBody @Validated TransferDTO transferDTO, Principal principal) {
         try {
             ResultTransferDTO transferResult = bankCardService
                     .transferBetweenOwnCardsByUsername(transferDTO, principal.getName());

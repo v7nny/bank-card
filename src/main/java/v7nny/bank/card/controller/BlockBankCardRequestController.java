@@ -1,5 +1,6 @@
 package v7nny.bank.card.controller;
 
+import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,7 +45,7 @@ public class BlockBankCardRequestController {
 
     @PostMapping
     @CreateBlockCardRequestDoc
-    public ResponseEntity<?> create(int cardId, Principal principal) {
+    public ResponseEntity<?> create(@Min(value = 1, message= "{validation.id-min}") int cardId, Principal principal) {
         try {
             BlockBankCardRequest blockRequest = blockBankCardRequestService.create(cardId, principal.getName());
 

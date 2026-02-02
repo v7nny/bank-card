@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import v7nny.bank.card.documentation.auth.SignInDoc;
 import v7nny.bank.card.documentation.auth.SignUpDoc;
@@ -27,7 +28,7 @@ public class AuthController {
 
     @PostMapping("/sign-up")
     @SignUpDoc
-    public ResponseEntity<?> signUp(@RequestBody SignUpDTO signUpDTO, HttpServletResponse response) {
+    public ResponseEntity<?> signUp(@RequestBody @Validated SignUpDTO signUpDTO, HttpServletResponse response) {
         try {
             var cookie = authService.signUp(signUpDTO);
 
@@ -40,7 +41,7 @@ public class AuthController {
 
     @PostMapping("/sign-in")
     @SignInDoc
-    public ResponseEntity<?> signIn(@RequestBody SignInDTO signInDTO, HttpServletResponse response) {
+    public ResponseEntity<?> signIn(@RequestBody @Validated SignInDTO signInDTO, HttpServletResponse response) {
         try {
             var cookie = authService.signIn(signInDTO);
 

@@ -1,3 +1,11 @@
 package v7nny.bank.card.dto;
 
-public record SignInDTO(String login, String password) {}
+import jakarta.validation.constraints.NotBlank;
+
+public record SignInDTO(
+        @NotBlank(message = "{validation.login.not-blank}")
+        String login,
+
+        @NotBlank(message = "{validation.password.not-blank")
+        String password
+) {}
