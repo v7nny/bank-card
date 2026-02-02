@@ -15,8 +15,6 @@ import v7nny.bank.card.exception.bankcard.CardNumberEncryptException;
 import v7nny.bank.card.exception.bankcard.CardStatusAlreadySetException;
 import v7nny.bank.card.exception.user.UserNotFoundException;
 import v7nny.bank.card.service.BankCardService;
-
-import java.util.List;
 import java.util.Map;
 
 @RestController

@@ -1,19 +1,21 @@
 spring:
   application:
     name: bank.card
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE}
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: postgres
-    password: postgres
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
   liquibase:
     change-log: classpath:/db/migration/changelog.sql
 cors:
-  url:
-  port:
+  url: ${CORS_URL}
+  port: ${CORS_PORT}
 jwt:
-  lifetime:
-  secret:
+  lifetime: ${JWT_LIFETIME}
+  secret: ${JWT_SECRET_KEY}
 bank-card:
-  encryption-key:
-  lifetime-in-years:
+  encryption-key: ${ENCRYPTION_KEY}
+  lifetime-in-years: ${LIFETIME_IN_YEARS}
