@@ -43,6 +43,14 @@ public class BankCardUser {
 
     public BankCardUser() {}
 
+    public BankCardUser(int id, String username, String email, String password, Collection<Role> roles) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.roles = roles;
+    }
+
     public BankCardUser(String username, String email, String password, Collection<Role> roles) {
         this.username = username;
         this.email = email;

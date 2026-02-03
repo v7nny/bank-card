@@ -38,6 +38,10 @@ public class BlockBankCardRequest {
         return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public BlockBankCardRequestStatus getStatus() {
         return status;
     }

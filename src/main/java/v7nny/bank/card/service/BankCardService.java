@@ -85,10 +85,10 @@ public class BankCardService {
 
     @Transactional
     public BankCard create(int userId) throws UserNotFoundException, CardNumberEncryptException {
+        var user = userService.findOneById(userId);
         String cardNumber = generateCardNumber();
         String maskedCardNumber = cardNumberEncryptor.maskCardNumber(cardNumber);
         String encryptedCardNumber = cardNumberEncryptor.encryptCardNumber(cardNumber);
-        var user = userService.findOneById(userId);
         var bankCard = new BankCard(encryptedCardNumber, maskedCardNumber, bankCardExpiryDate, user);
 
         return bankCardRepository.save(bankCard);
@@ -130,8 +130,17 @@ public class BankCardService {
     }
 
     private void validateCardStatus(BankCard card, BankCardStatus newStatus) throws CardStatusAlreadySetException, CardExpiredException {
-        if(card.isCardExpired()) throw new CardExpiredException("Bank card is expired");
         if(card.getStatus() == newStatus) throw new CardStatusAlreadySetException("Bank card already has this status set");
+
+        if(newStatus == BankCardStatus.EXPIRED) return;
+
+        if (LocalDate.now().isAfter(card.getExpiryDate()) && card.getStatus() != BankCardStatus.EXPIRED) {
+            card.setStatus(BankCardStatus.EXPIRED);
+            bankCardRepository.save(card);
+            throw new CardExpiredException("Bank card is expired");
+        }
+
+        if(card.isCardStatusExpired()) throw new CardExpiredException("Bank card is expired");
     }
 
     private void validateCardsOwnership(BankCard fromCard, BankCard toCard, String username) throws CardAccessDeniedException {

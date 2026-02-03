@@ -28,7 +28,8 @@ public class BlockBankCardRequestService {
     private final BankCardUserService userService;
 
     @Autowired
-    public BlockBankCardRequestService(BlockBankCardRequestRepository blockBankCardRequestRepository, BankCardService bankCardService, BankCardUserService userService) {
+    public BlockBankCardRequestService(BlockBankCardRequestRepository blockBankCardRequestRepository,
+                                       BankCardService bankCardService, BankCardUserService userService) {
         this.blockBankCardRequestRepository = blockBankCardRequestRepository;
         this.bankCardService = bankCardService;
         this.userService = userService;

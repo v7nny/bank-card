@@ -83,8 +83,28 @@ public class BankCard {
         return user;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setEncryptedCardNumber(String encryptedCardNumber) {
+        this.encryptedCardNumber = encryptedCardNumber;
+    }
+
+    public void setMaskedCardNumber(String maskedCardNumber) {
+        this.maskedCardNumber = maskedCardNumber;
+    }
+
+    public void setBalance(BigDecimal balance) {
+        this.balance = balance;
+    }
+
     public void setStatus(BankCardStatus status) {
         this.status = status;
+    }
+
+    public void setExpiryDate(LocalDate expiryDate) {
+        this.expiryDate = expiryDate;
     }
 
     public void setUser(BankCardUser user) {
@@ -92,7 +112,7 @@ public class BankCard {
     }
 
     @JsonIgnore
-    public boolean isCardExpired() {
+    public boolean isCardStatusExpired() {
         return this.status == BankCardStatus.EXPIRED;
     }
 
